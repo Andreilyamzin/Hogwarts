@@ -1,4 +1,5 @@
 package ru.hogwarts.school.service;
+
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exceptions.RecordNotFoundException;
 import ru.hogwarts.school.model.Faculty;
@@ -42,7 +43,11 @@ public class FacultyService {
                 .orElse(null);
     }
 
-    public Collection<Faculty> getByColor(String color) {
-        return repository.findAllByColor(color);
+    public Collection<Faculty> getByColorAndName(String color, String name) {
+        return repository.findAllByColorIgnoreCaseOrAndNameIgnoreCase(color, name);
+    }
+
+    public Collection<Faculty> getAll() {
+        return repository.findAll();
     }
 }
