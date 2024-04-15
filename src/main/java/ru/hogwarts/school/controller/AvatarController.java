@@ -29,7 +29,7 @@ public class AvatarController {
     public void loadFromDisk(@PathVariable Long id, HttpServletResponse response) throws IOException {
         var avatar = service.getById(id);
         if (avatar != null) {
-            response.setContentLength((int) avatar.getFileSize());
+            response.setContentLength((int)avatar.getFileSize());
             response.setContentType(avatar.getMediaType());
             try (var fis = new FileInputStream(avatar.getFilePath())) {
                 fis.transferTo(response.getOutputStream());

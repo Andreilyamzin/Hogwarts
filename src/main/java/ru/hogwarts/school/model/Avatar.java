@@ -31,8 +31,8 @@ public class Avatar {
         this.filePath = filePath;
     }
 
-    public Long getFileSize() {
-        return fileSize;
+    public int getFileSize() {
+        return Math.toIntExact(fileSize);
     }
 
     public void setFileSize(Long fileSize) {
