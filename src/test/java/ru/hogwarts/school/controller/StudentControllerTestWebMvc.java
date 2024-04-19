@@ -11,31 +11,27 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
-import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.AvatarService;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
-
-
-import java.util.List;
 
 import java.util.Optional;
 
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
 @WebMvcTest
-class FacultyControllerTestWebMvc {
+class StudentControllerTestWebMvc {
     @Autowired
     MockMvc mvc;
 
     @MockBean
-    FacultyRepository facultyRepository;
+    StudentRepository studentRepository;
     @SpyBean
     FacultyService facultyService;
     @MockBean
@@ -43,7 +39,7 @@ class FacultyControllerTestWebMvc {
     @MockBean
     StudentService studentService;
     @InjectMocks
-    FacultyController controller;
+    StudentController controller;
 
     @BeforeEach
     void setUp() {
@@ -52,39 +48,39 @@ class FacultyControllerTestWebMvc {
 
     @Test
     void testGet() throws Exception {
-        when(facultyRepository.findById(1L)).thenReturn(Optional.of(new Faculty(1L, "test_faculty_mvc", "test_color_mvc")));
-        mvc.perform(MockMvcRequestBuilders.get("/faculty=?id=1"))
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(new Student(1L, "test_student_mvc", 10)));
+        mvc.perform(MockMvcRequestBuilders.get("/student=?id=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("test_faculty_mvc"))
-                .andExpect(jsonPath("$.color").value("test_color_mvc"));
+                .andExpect(jsonPath("$.name").value("test_student_mvc"))
+                .andExpect(jsonPath("$.age").value(10));
     }
 
     @Test
     void testUpdate() throws Exception {
-        when(facultyRepository.findById(1L)).thenReturn(Optional.of(new Faculty(1L, "test_faculty_mvc", "test_color_mvc")));
-        Faculty faculty = new Faculty(1L, "updated_name", "updated_color");
-        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(new Student(1L, "test_faculty_mvc", 10)));
+        Student student = new Student(1L, "updated_name", 20);
+        when(studentRepository.save(any(Student.class))).thenReturn(student);
 
         ObjectMapper objectMapper = new ObjectMapper();
         mvc.perform(MockMvcRequestBuilders.put("faculty=?id=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(faculty)))
+                        .content(objectMapper.writeValueAsString(student)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("updated_name"))
-                .andExpect(jsonPath("$.color").value("updated_color"));
+                .andExpect(jsonPath("$.age").value(10));
     }
 
     @Test
     void testDelete() throws Exception {
-        when(facultyRepository.findById(2L)).thenReturn(Optional.of(new Faculty(1L, "test_faculty_mvc", "test_color_mvc")));
-        mvc.perform(MockMvcRequestBuilders.delete("faculty=?id=2"))
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(new Student(1L, "test_faculty_mvc", 10)));
+        mvc.perform(MockMvcRequestBuilders.delete("student=?id=2"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
 
-        when(facultyRepository.findById(333L)).thenReturn(Optional.empty());
-        mvc.perform(MockMvcRequestBuilders.delete("faculty=?id=333"))
+        when(studentRepository.findById(333L)).thenReturn(Optional.empty());
+        mvc.perform(MockMvcRequestBuilders.delete("student=?id=333"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
 
@@ -92,57 +88,59 @@ class FacultyControllerTestWebMvc {
 
     @Test
     void testAdd() throws Exception {
-        when(facultyRepository.save(any(Faculty.class))).then(invocationOnMock -> {
-            Faculty input = invocationOnMock.getArgument(0, Faculty.class);
-            Faculty f = new Faculty();
+        when(studentRepository.save(any(Student.class))).then(invocationOnMock -> {
+            Student input = invocationOnMock.getArgument(0, Student.class);
+            Student f = new Student(1L, "name1", 10, new Student(2L, "name2", 20));
             f.setId(100L);
-            f.setColor(input.getColor());
+            f.setAge(input.getAge());
             f.setName(input.getName());
             return f;
         });
-        Faculty faculty = new Faculty(null, "foo", "bar");
+        Student student = new Student(null, "foo", 10);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        mvc.perform(MockMvcRequestBuilders.post("faculty")
+        mvc.perform(MockMvcRequestBuilders.post("student")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(faculty)))
+                        .content(objectMapper.writeValueAsString(student)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(100L))
                 .andExpect(jsonPath("$.name").value("foo"))
-                .andExpect(jsonPath("$.color").value("bar"));
+                .andExpect(jsonPath("$.age").value(10));
     }
 
     @Test
     void testByColorAndName() throws Exception {
-        when(facultyRepository.findAllByColorIgnoreCaseOrAndNameIgnoreCase(anyString(), anyString()))
-                .thenReturn(List.of(
-                        new Faculty(1L, "name1", "color1"),
-                        new Faculty(2L, "name2", "color2")));
+
+        when(studentRepository.findAllByAgeBetween(10,20)
+                .iterator(
+                        new Student(1L, "name1", 10,
+                        new Student(2L, "name2", 20));
 
 
-        mvc.perform(MockMvcRequestBuilders.get("/faculty/byColorAndName?name=name1&color=color2"))
+        mvc.perform(MockMvcRequestBuilders.get("/student/byAgeAndName?name=name1&age=age"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("name1"))
-                .andExpect(jsonPath("$[0].color").value("color1"))
+                .andExpect(jsonPath("$[0].age").value(10))
                 .andExpect(jsonPath("$[1].name").value("name2"))
-                .andExpect(jsonPath("$[1].color").value("color2"));
+                .andExpect(jsonPath("$[1].age").value(20));
     }
 
     @Test
     void testGetStudent() throws Exception {
-        Faculty f = new Faculty(1L, "f1", "c1");
-        f.setStudents(List.of(new Student(1L, "s1", 10)));
+        Student f = new Student(1L, "f1", 10);
+        f.setId((new Student(1L, "s1", 10)).getId());
 
 
-        when(facultyRepository.findById(1L)).thenReturn(Optional.of(f));
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(f));
 
-        mvc.perform(MockMvcRequestBuilders.get("/faculty/students?facultyId=1"))
+        mvc.perform(MockMvcRequestBuilders.get("/student/faculty?studentId=1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("s1"))
                 .andExpect(jsonPath("$[0].age").value(10));
 
-        mvc.perform(MockMvcRequestBuilders.get("/faculty/students?facultyId="))
+        mvc.perform(MockMvcRequestBuilders.get("/student/faculty?studentId="))
                 .andExpect(status().is(400));
     }
 }
+

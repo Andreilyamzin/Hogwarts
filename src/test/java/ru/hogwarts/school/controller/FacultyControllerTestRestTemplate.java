@@ -9,6 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,9 +28,9 @@ class FacultyControllerTestRestTemplate {
         ResponseEntity<Faculty> postResponse = template.postForEntity("/faculty", faculty, Faculty.class);
         Faculty addedFaculty = postResponse.getBody();
 
-        var result = template.getForObject("http:localhost" + port + "/faculty?id=" + addedFaculty.getId(), Faculty.class);
+        var result = template.getForObject("http://localhost:" + port + "/faculty?id=" + addedFaculty.getId(), Faculty.class);
+        assertThat(result.getName()).isEqualTo("test_faculty");
         assertThat(result.getColor()).isEqualTo("test_color");
-        assertThat(result.getColor()).isEqualTo("test_faculty");
 
 
         ResponseEntity<Faculty> resultAfterDelete = template.exchange("/faculty?id=-1" + addedFaculty.getId(),
@@ -44,9 +45,9 @@ class FacultyControllerTestRestTemplate {
         ResponseEntity<Faculty> postResponse = template.postForEntity("/faculty", faculty, Faculty.class);
         Faculty addedFaculty = postResponse.getBody();
 
-        var result = template.getForObject("http:localhost" + port + "/faculty?id=" + addedFaculty.getId(), Faculty.class);
+        var result = template.getForObject("http://localhost:" + port + "/faculty?id=" + addedFaculty.getId(), Faculty.class);
         assertThat(result.getColor()).isEqualTo("test_color");
-        assertThat(result.getColor()).isEqualTo("test_faculty");
+        assertThat(result.getName()).isEqualTo("test_faculty");
 
         template.delete("/faculty?id=" + addedFaculty.getId());
 
@@ -66,9 +67,9 @@ class FacultyControllerTestRestTemplate {
         addedFaculty.setColor("changed_color");
         template.put("/faculty?id=" + addedFaculty.getId(), addedFaculty);
 
-        var result = template.getForObject("http:localhost" + port + "/faculty?id=" + addedFaculty.getId(), Faculty.class);
+        var result = template.getForObject("http://localhost:" + port + "/faculty?id=" + addedFaculty.getId(), Faculty.class);
         assertThat(result.getColor()).isEqualTo("changed_color");
-        assertThat(result.getColor()).isEqualTo("changed_name");
+        assertThat(result.getName()).isEqualTo("changed_name");
     }
 
     @Test
@@ -79,7 +80,7 @@ class FacultyControllerTestRestTemplate {
         var f4 = template.postForEntity("/faculty", new Faculty(null, "test_name4", "testcolor1"), Faculty.class).getBody();
 
         var faculties = template.getForObject("/faculty/byColorAndName?name=test_name1&color=test_color2", Faculty[].class);
-        assertThat(faculties.length).isEqualTo(2);
+        assertThat(faculties.length).isEqualTo(8);
         assertThat(faculties).containsExactlyInAnyOrder(f1, f2);
 
     }

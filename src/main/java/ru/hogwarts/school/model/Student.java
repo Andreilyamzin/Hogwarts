@@ -18,13 +18,15 @@ public class Student {
     @JsonIgnore
     private Faculty faculty;
 
+
+
     public Student(Long id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
     }
 
-    public Student() {
+    public Student(long l, String name1, int i, Student name2) {
 
     }
 
