@@ -11,9 +11,11 @@ import java.util.Collection;
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService service;
+    private final StudentService studentService;
 
-    public StudentController(StudentService service) {
+    public StudentController(StudentService service, StudentService studentService) {
         this.service = service;
+        this.studentService = studentService;
     }
 
     @GetMapping
@@ -47,5 +49,18 @@ if(min!= null && max !=null){
     @GetMapping("faculty")
     public Faculty getStudentFaculty( @RequestParam long studentId){
         return service.get(studentId).getFaculty();
+    }
+
+    @GetMapping("/count")
+    public int getStudentCount() {
+        return studentService.getStudentCount();
+    }
+    @GetMapping("/avg-age")
+    public double getAvgAge() {
+        return studentService.getAvgAge();
+    }
+    @GetMapping("/last")
+    public Collection<Student> getLastStudents() {
+        return studentService.getLastFive();
     }
 }

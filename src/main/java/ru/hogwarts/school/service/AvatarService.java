@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class AvatarService {
@@ -31,7 +34,7 @@ public class AvatarService {
         Files.createDirectories(avatarsDir);
         var index = file.getOriginalFilename().lastIndexOf('.');
         var extension = file.getOriginalFilename().substring(index);
-        Path filePath = avatarsDir.resolve(studentId  + extension);
+        Path filePath = avatarsDir.resolve(studentId + extension);
         try (var in = file.getInputStream()) {
             Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
@@ -51,4 +54,7 @@ public class AvatarService {
 
     }
 
+    public List<Avatar> getPage(int pageNumder, int pageSize) {
+        return avatarRepository.findAll(PageRequest.of(pageNumder, pageSize)).toList();
+    }
 }

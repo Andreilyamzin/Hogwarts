@@ -11,9 +11,11 @@ import java.util.Collection;
 @Service
 public class StudentService {
     private final StudentRepository repository;
+    private final StudentRepository studentRepository;
 
-    public StudentService(StudentRepository repository) {
+    public StudentService(StudentRepository repository, StudentRepository studentRepository) {
         this.repository = repository;
+        this.studentRepository = studentRepository;
     }
 
 
@@ -44,9 +46,21 @@ public class StudentService {
     }
 
     public Collection<Student> getByAgeBetween(int min, int max) {
-        return repository.findAllByAgeBetween(min,max);
+        return repository.findAllByAgeBetween(min, max);
     }
+
     public Collection<Student> getAll() {
         return repository.findAll();
+    }
+
+    public int getStudentCount() {
+        return studentRepository.countStudents();
+    }
+    public double getAvgAge() {
+        return studentRepository.avgAge();
+    }
+
+    public Collection<Student> getLastFive() {
+        return studentRepository.getLastFive();
     }
 }
