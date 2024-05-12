@@ -12,9 +12,11 @@ import java.util.List;
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService service;
+    private final FacultyService facultyService;
 
-    public FacultyController(FacultyService service) {
+    public FacultyController(FacultyService service, FacultyService facultyService) {
         this.service = service;
+        this.facultyService = facultyService;
     }
 
     @GetMapping
@@ -51,5 +53,10 @@ public class FacultyController {
     @GetMapping("students")
     public List<Student> getStudentFaculty(@RequestParam long facultyId) {
         return service.get(facultyId).getStudents();
+    }
+
+    @GetMapping("/longestName")
+    public String getLongestName() {
+        return facultyService.getLongestName();
     }
 }
